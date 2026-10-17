@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>S + K 💙❤️</title>
+<!-- Carga de estilos de Leaflet para el mapa interactivo -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<!-- Carga del código de Leaflet que faltaba -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    background: #0a0a0f;
+    color: white;
+    font-family: Arial, sans-serif;
+    overflow-x: hidden;
+    text-align: center;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 42px;
+    margin: 20px 0;
+    background: linear-gradient(45deg, #ff0055, #0066ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  h2 {
+    margin-top: 10px;
+  }
+
+  .nav-menu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 10px;
+  }
+
+  button {
+    margin: 5px;
+    padding: 10px 18px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    backdrop-filter: blur(5px);
+    transition: transform 0.2s, background 0.2s;
+  }
+
+  button:hover {
+    transform: scale(1.05);
+    background: linear-gradient(45deg, #ff0055, #0066ff);
+  }
+
+  .seccion {
+    display: none;
+    text-align: center;
+    margin-top: 20px;
+    padding: 20px;
+    animation: fadeIn 0.4s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .quiz-box, .card-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .quiz-pregunta {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .quiz-opciones {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(140px, 1fr));
+    gap: 10px;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  .quiz-opciones button {
+    width: 100%;
+    margin: 0;
+  }
+
+  .quiz-feedback {
+    margin-top: 20px;
+    font-size: 22px;
+    min-height: 40px;
+  }
+
+  .quiz-progreso {
+    margin-top: 10px;
+    font-size: 16px;
+    opacity: 0.85;
+  }
+
+  .lluvia {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 999;
+  }
+
+  .lluvia span {
+    position: absolute;
+    font-weight: bold;
+    white-space: nowrap;
+    font-size: 20px;
+  }
+
+  @keyframes caer {
+    0% { transform: translateY(-10%); opacity: 1; }
+    100% { transform: translateY(110vh); opacity: 0; }
+  }
+
+  @keyframes subir {
+    0% { transform: translateY(110vh); opacity: 1; }
+    100% { transform: translateY(-10%); opacity: 0; }
+  }
+
+  img {
+    margin: 10px;
+    border-radius: 12px;
+    max-width: 90%;
+    height: auto;
+  }
+
+  .carta {
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.8;
+    font-size: 18px;
+  }
+
+  /* Estilos para las 11 Nuevas Secciones */
+  #map {
+    height: 350px;
+    width: 100%;
+    max-width: 700px;
+    margin: 15px auto;
+    border-radius: 12px;
+  }
+
+  .timeline {
+    border-left: 3px solid #ff0055;
+    margin: 20px auto;
+    padding-left: 20px;
+    max-width: 500px;
+    text-align: left;
+  }
+
+  .timeline-item {
+    margin-bottom: 25px;
+    position: relative;
+  }
+
+  .timeline-item::before {
+    content: '💙';
+    position: absolute;
+    left: -32px;
+    top: 0;
+  }
+
+  .chat-box {
+    background: #151922;
+    border-radius: 12px;
+    padding: 15px;
+    max-width: 450px;
+    margin: 10px auto;
+    text-align: left;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .sobren-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .flor-stage {
+    font-size: 80px;
+    margin: 20px 0;
+  }
+
+  .exe-stats {
+    font-family: monospace;
+    font-size: 20px;
+    color: #00ffcc;
+    text-align: left;
+    display: inline-block;
+  }
+</style>
+</head>
+<body>
+
+<h1>S + K 💙❤️</h1>
+
+<div class="nav-menu">
+  <!-- Botones Originales -->
+  <button onclick="mostrarSeccion('razones')">💌 Razones</button>
+  <button onclick="mostrarSeccion('quiz')">❓ Quiz</button>
+  <button onclick="mostrarSeccion('lluvia')">🌧️ Lluvia</button>
+  <button onclick="mostrarSeccion('carta')">📜 Carta</button>
+
+  <!-- 11 Nuevas Opciones -->
+  <button onclick="mostrarSeccion('mapa')">🌎 Nuestro Mapa</button>
+  <button onclick="mostrarSeccion('recuerdos')">📸 Recuerdos</button>
+  <button onclick="mostrarSeccion('cancion')">🎧 Nuestra Canción</button>
+  <button onclick="mostrarSeccion('exe')">🎮 Sofía.exe</button>
+  <button onclick="mostrarSeccion('historia')">🕰️ Nuestra Historia</button>
+  <button onclick="mostrarSeccion('sobres')">🎁 Abre Cuando...</button>
+  <button onclick="mostrarSeccion('secreto')">🔐 Mensaje Secreto</button>
+  <button onclick="mostrarSeccion('flor')">🌸 Nuestra Flor</button>
+  <button onclick="mostrarSeccion('audio')">🎵 Audio Especial</button>
+  <button id="btnFinalSecreto" style="display:none; background: linear-gradient(45deg, gold, #ff007f);" onclick="mostrarSeccion('final')">🔒 Final Secreto</button>
+</div>
+
+<!-- 1. RAZONES (Original) -->
+<div id="razones" class="seccion">
+  <h2>Razones por las que te amo 💙</h2>
+  <p id="textoRazon">Presiona el botón</p>
+  <button onclick="mostrarRazon()">Dame una razón</button>
+</div>
+
+<!-- 2. QUIZ (Original) -->
+<div id="quiz" class="seccion">
+  <div class="quiz-box">
+    <h2>Quiz 😈</h2>
+    <p id="preguntaActual" class="quiz-pregunta"></p>
+    <div id="opcionesQuiz" class="quiz-opciones"></div>
+    <p id="resultadoQuiz" class="quiz-feedback"></p>
+    <p id="progresoQuiz" class="quiz-progreso"></p>
+    <div id="botonesQuiz"></div>
+  </div>
+</div>
+
+<!-- 3. LLUVIA (Original) -->
+<div id="lluvia" class="seccion">
+  <h2>Lluvia de amor 💙❤️</h2>
+  <button onclick="crearLluvia()">Activar lluvia</button>
+  <div class="lluvia" id="contenedorLluvia"></div>
+</div>
+
+<!-- 4. CARTA (Original) -->
+<div id="carta" class="seccion">
+  <h2>Carta 💌</h2>
+  <div class="carta">
+    <h1>mi pinseshita</h1>
+    <p style="font-size: 25px;"></p>
+      <img src="img/zai.jpg" style="float: left; margin-right: 15px;" alt="">te escribo esta cartita pala decirte lo agradecido que estoy con tigo por todo lo que me has dado en tooodo este añoo, la 
+      felicidad que teno desde que te conoci, gashash pol como me cuidas amoltito, gracias pol siempre mejorarme mis dias malos,
+      gashiash pol estar conmigo en las buenas y en las malas mi amol, elesh lo mejor que me ah pasado en la vida, siemple me haces
+      reir y me dash ganas de vivir pol nuestro futuro, pala estal nosotros dos en nuestra casita cuidando
+      a kai y a otosh dosh gatitosh peshoshosh, tenel un conejitoo yyy un pelitooo y un loritoo Y UN CABALLITOOO JKJKAJSKJASKJAS 
+      tenel <img src="img/us.jpeg" width="250" style="float: right; margin-left: 15px;" alt=""> tambien a nuestros dosh hijitos en un futuro, violeta y liann yia me imagino a nosotros cuetro mimiendo mientras
+      les contamos que el amol shi existe y que nosotros somos la prueba de esho, pol como nos conocimos a los 12 y 13 añitoshh
+     o tal viendo k-dramash pol que nos obligaste jijijiji, amol en selio gashash pol darme un año de taaaanta felicidad y hacerme el 
+      hombre mash feliz de tooooodo el mudno y apoyarme siempre en todo, estar con migo tanto en momentos malos como en momentos 
+      guenosh mi vidaaa, plometo amarte cuidarte y tal pol siemple pala ti pashe lo que pashe pol que tu eles el amol de mi 
+      vida y ño quelo a nadie mas que ño seas tu amodshito pol que tu siemple siemple me haces feliz y toy 100% segulo que nadie
+      puede sel ni siquiera el cuarto del cuartito de helmosha, amorosa, cariñosa, guena gente, graciosa, unica ni pelfecta de 
+      lo que eles tu mi pinseshitaaaa y en selio amol gashahs pol toodo, te mo muchisisisisisisiisiiiiimo mi leinitaaa MUACK
+      MUACK MMMMUACKKK 💕💓❣️💗💞💖💝💞💘💓💗💕<br><br>
+      Y ÑOOO ÑO ME AMASH MAS TUUU 😠 😠 <br><br> att: tu novieshito muackk 💗💞💕<br><br> el tercer numero es el 🫂<br><br> <img src="img/beso.jpeg" alt="">
+  </div>
+</div>
+
+<!-- 🌎 NUESTRO MAPA -->
+<div id="mapa" class="seccion">
+  <div class="card-container">
+    <h2>Nuestro Mapa 🌎</h2>
+    <p>Nuestros lugares especiales recorridos juntos:</p>
+    <div id="map"></div>
+    <p><b>Próximo destino: Nosotros juntos. ✨</b></p>
+  </div>
+</div>
+
+<!-- 📸 NESTRAS FOTITOSH -->
+<div id="recuerdos" class="seccion">
+  <div class="card-container">
+    <h2>Nuestras fotitosh 📸</h2>
+    <img id="imgAlbum" src="img/us.jpeg" alt="Recuerdo" style="max-height: 300px; display: block; margin: 0 auto;">
+    <p id="descAlbum" style="font-size: 18px; margin-top: 15px;">❤️ALBUM DE FOTOS CON EL AMOR DE MI VIDA ❤️</p>
+    <button onclick="cambiarFoto(-1)">⬅️ Anterior</button>
+    <button onclick="cambiarFoto(1)">Siguiente ➡️</button>
+  </div>
+</div>
+
+<!-- 🎧 NUESTRA CANCIÓN -->
+<div id="cancion" class="seccion">
+  <div class="card-container">
+    <h2>Nuestra Canción 🎧</h2>
+    <p>Esta canción me recuerda a ti cada segundo...</p>
+    <audio controls style="margin-top: 15px; width: 100%;">
+      <source src="musica/music.mp3" type="audio/mpeg">
+      Tu navegador no soporta el reproductor de audio.
+    </audio>
+  </div>
+</div>
+
+<!-- 🎮 SOFÍA.EXE -->
+<div id="exe" class="seccion">
+  <div class="card-container">
+    <h2>SOFÍA.EXE 🎮</h2>
+    <div class="exe-stats">
+      <p>❤️ Amor ........ ██████████ 100%</p>
+      <p>✨ Ternura ..... ██████████ 100%</p>
+      <p>😭 bullying ...... ██████████ 100%</p>
+    </div>
+    <br><br>
+    <button onclick="alert('Sofía.exe ha sido iniciada correctamente en mi corazón. ❤️, el sexto numero es el 0️⃣')">▶️ INICIAR</button>
+  </div>
+</div>
+
+<!-- 🕰️ NUESTRA HISTORIA -->
+<div id="historia" class="seccion">
+  <h2>Nuestra Historia 🕰️</h2>
+  <div class="timeline">
+    <div class="timeline-item"><b>21/03/2025:</b> Nos conocimohh</div>
+    <div class="timeline-item"><b>10/04/2025:</b> Comenzó oficialmente nuestra historia de amolll❤️❤️❤️ </div>
+    <div class="timeline-item"><b>10/04/2026:</b> Un aniversario super lejos 😭😭😭 (el dia que funde esta misma pagina) jiji </div>
+    <div class="timeline-item"><b>9/01/2026:</b> Nosvimos despues de eshas vacaciones larguisissisisimashhhh 💗💗💓💞💕 </div>
+    <div class="timeline-item"><b>10/01/2026:</b> Me tube que ir pol muchisimo tiempo 😭😭😭 </div>
+    <div class="timeline-item"><b>5/9/2026:</b> Pol fin nos vimos y senti una paz profundaa 🥹🥹💗 </div>
+    <div class="timeline-item"><b>6/9/2026:</b> OTRA VEZ.😠 </div>
+    <div class="timeline-item"><b>18/10/2026 hoy:</b> De los dias mas especiales de el añoo (despues de nuestro matrimonio jiji) 💗💞💞💗</div>
+    <div class="timeline-item"><b>18/10/2026 hoy:</b> Uno de los dias mas tristes al principio pelo el dia en el que prometimos cuidar como nunca nuestra relacionn 💗💞💝💞💗</div>
+    <div class="timeline-item"><b>???:</b> Lo que todavía nos falta por vivir juntitoshhh ❤️</div>
+  </div>
+</div>
+
+<!-- 🎁 ABRE CUANDO... -->
+<div id="sobres" class="seccion">
+  <h2>Abre cuando... 🎁</h2>
+  <div class="sobren-grid">
+    <button onclick="mostrarMensajeSobres('extrañes')">💙 Me extrañes</button>
+    <button onclick="mostrarMensajeSobres('triste')">🥺 Estés triste</button>
+    <button onclick="mostrarMensajeSobres('reir')">😂 Necesites reírte</button>
+    <button onclick="mostrarMensajeSobres('dormir')">🌙 Antes de dormir</button>
+  </div>
+  <!-- Contenedor donde aparecerá el mensaje aleatorio -->
+  <div id="resultadoSobres" class="card-container" style="margin-top: 20px; display: none; text-align: left; font-size: 16px; line-height: 1.6;">
+    <p id="textoSobres"></p>
+    <button onclick="cerrarMensajeSobres()" style="margin-top: 10px;">Cerrar sobre 💌</button>
+  </div>
+</div>
+
+<!-- 🔐 MENSAJE SECRETO -->
+<div id="secreto" class="seccion">
+  <div class="card-container">
+    <h2>Mensaje Secreto 🔐</h2>
+    <p>Ingresa el código secreto para desbloquear (esta escondido en la pagina)</p>
+    <input type="password" id="claveInput" style="padding: 10px; font-size: 16px; border-radius: 8px; border: none;" />
+    <button onclick="verificarClave()">Desbloquear</button>
+    <p id="mensajeOculto" style="display:none; font-size: 20px; color: #00ffcc; margin-top: 15px;"></p>
+  </div>
+</div>
+
+<!-- 🌸 HAZ CRECER NUESTRA FLOR -->
+<div id="flor" class="seccion">
+  <div class="card-container">
+    <h2>Nuestra Flor 🌸</h2>
+    <div id="etapaFlor" class="flor-stage">🌱</div>
+    <p id="textoFlor">Presiona el botón para regar nuestra relación.</p>
+    <button onclick="crecerFlor()">Riego 💦</button>
+  </div>
+</div>
+
+<!-- 🎵 UN AUDIO PARA TI -->
+<div id="audio" class="seccion">
+  <div class="card-container">
+    <h2>Un audio para ti 🎵</h2>
+    <p>Nuestra historia de amor contada por mi 💗</p>
+    <audio controls style="margin-top: 15px; width: 100%;">
+  <source src="musica/audio.mp3" type="audio/mpeg">
+  Tu navegador no soporta el reproductor de audio.
+    </audio>
+    <h2>Numero regalado: el septimo numero es el 0️⃣</h2>
+  </div>
+</div>
+
+<!-- 🔒 FINAL SECRETO -->
+<div id="final" class="seccion">
+  <div class="card-container" style="position: relative; background: rgba(20, 15, 30, 0.85); border: 2px solid gold; border-radius: 20px; text-align: center; word-break: break-word; overflow-wrap: break-word; padding: 45px 25px 35px 25px; box-shadow: 0 0 25px rgba(255, 215, 0, 0.25);">
+    
+    <!-- 🌸 DECORACIONES EN LAS 4 ESQUINAS 🌸 -->
+    <div style="position: absolute; top: 12px; left: 15px; font-size: 22px; pointer-events: none; user-select: none;">🌷✨💖</div>
+    <div style="position: absolute; top: 12px; right: 15px; font-size: 22px; pointer-events: none; user-select: none;">💖✨🌷</div>
+    <div style="position: absolute; bottom: 12px; left: 15px; font-size: 22px; pointer-events: none; user-select: none;">💗🌷✨</div>
+    <div style="position: absolute; bottom: 12px; right: 15px; font-size: 22px; pointer-events: none; user-select: none;">✨🌷💘</div>
+
+    <h2>Final Secreto 🔒✨</h2>
+    
+    <!-- Foto Polaroid Horizontal y Más Grande -->
+    <div style="display: block; margin: 10px auto 30px auto; background: white; padding: 14px 14px 28px 14px; border-radius: 12px; transform: rotate(-2.5deg); box-shadow: 0 12px 30px rgba(0,0,0,0.7); max-width: 520px; width: 92%;">
+      <img src="img/fav.jpeg" style="width: 100%; height: auto; border-radius: 6px; margin: 0; display: block;" alt="Juntitos">
+      <p style="color: #222; font-family: 'Comic Sans MS', cursive, sans-serif; font-size: 17px; margin: 14px 0 0 0; font-weight: bold; text-align: center;">Juntitos por siempre 💖</p>
+    </div>
+
+    <h3 style="font-size: 26px; color: #ff3377; margin-bottom: 25px; text-shadow: 0 0 10px rgba(255, 51, 119, 0.5);">Hokis mi princeshita 💖💖</h3>
+
+    <!-- Texto de la carta separado por párrafos -->
+    <div style="font-size: 18px; line-height: 1.9; color: #f0f0f0; max-width: 650px; margin: 0 auto; text-align: justify; background: rgba(255, 255, 255, 0.03); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+      
+      <p style="margin-bottom: 20px;">
+        Mi prinseshita, quiero que sepas que cada momento contigo es un regalo. Desde el primer día que nos conocimos supe que había algo especial entre nosotrosh. Cada risita, cada abrazo, cada conversación ha hecho que mi amor pol ti crezca másh y másh.
+      </p>
+
+      <p style="margin-bottom: 20px;">
+        Eres mi compañera, mi mejor amiga, mi novia, mi esposa, mi vevita y mi princeshita. Ño hay nada en este mundo que desee más que seguir construyendo recuerdos al lado tuyo mi vida. Gashash por ser tú, pol tu amor incondicional, pol hacerme sentir completo y amado siempre.
+      </p>
+
+      <p style="margin-bottom: 20px;">
+        Te amo con todo mi corazón y con todo mi ser, jamás dejaré de amarte y todos los días mi amor por ti será más grande. Gashash mi vida por todo, pol las risas, por ponerme atención siempre y tenerme paciencia, por estar conmigo a pesar de los kilómetros y siempre esperarme mi vida.
+      </p>
+
+      <p style="margin-bottom: 0;">
+        Gashash por esforzarte por lo nuestro, gashash por iluminar cada día de mi existencia, gracias por existir y ser mi novia perfecta que siempre estuve esperando... graciosa, hermosa, inteligente y que me entiende siempre. Siempre te estuve esperando a ti aunque ño lo supiera mi princeshita, tú eres <span style="color: #00bfff; font-weight: bold;">my kind of woman</span>. Te amo mi leina y te amaré pol siempre cada día másh y másh.
+      </p>
+
+    </div>
+
+    <!-- Reproductor de audio -->
+    <div style="margin: 30px 0 20px 0;">
+      <audio controls style="width: 100%; max-width: 420px;">
+        <source src="musica/woman.mp3" type="audio/mpeg">
+        Tu navegador no soporta el reproductor de audio.
+      </audio>
+    </div>
+    
+    <p style="font-size: 22px; color: #ff0055; font-weight: bold; margin-top: 25px;">
+      ah y por cierto mi vida: el último número es el 7️⃣
+    </p>
+
+  </div>
+</div>
+<script>
+/* =========================
+   SISTEMA DE NAVEGACIÓN Y SECCIONES
+========================= */
+let seccionesAbiertas = new Set();
+
+function mostrarSeccion(id) {
+  const secciones = [
+    "razones", "quiz", "lluvia", "carta",
+    "mapa", "recuerdos", "cancion",
+    "exe", "historia", "sobres", "secreto",
+    "flor", "audio", "final"
+  ];
+
+  secciones.forEach(sec => {
+    const el = document.getElementById(sec);
+    if (el) el.style.display = "none";
+  });
+
+  const activo = document.getElementById(id);
+  if (activo) activo.style.display = "block";
+
+  if (id === "quiz") iniciarQuiz();
+  if (id === "mapa") inicializarMapa();
+
+  // Registro para desbloquear el Final Secreto
+  seccionesAbiertas.add(id);
+  if (seccionesAbiertas.size >= 6) {
+    document.getElementById("btnFinalSecreto").style.display = "inline-block";
+  }
+}
+
+/* =========================
+   RAZONES RANDOM
+========================= */
+const razones = [
+"Pol tu humor 💓💝💖💘",
+"Pol como me amas 💓💝💖💘💗",
+"Pol tu personalidad 💓💖💝💘",
+"Pol tu carita peshosha 💓💝❣️💘💗",
+"Pol nuestra relación 💗💗",
+"Pol nuestros futuros hijitos 💝💝💘",
+"Pol tus ojitos 💝💝💖",
+"Pol tus cachetitos peshoshos 💝💝💕🩷",
+"Pol tu pelito 💞💗💘🩷💝",
+"Pol tus manitos 💞💕💘💘💗💝",
+"Pol tus uñitas originales 👌💓💖❣️💝🩷",
+"Pol nuestra cashitaaaa 💞💓🩷💗💕💝💝",
+"Pala estar siempre juntitosh ❣️💝💘💕💞💕",
+"Pala mimir juntitosh ❣️🩷💝🩷 ",
+"Pala cocinar juntitoshhhh (y que se nos queme) 💖💓🩷💗💝❣️",
+"Pala darnos besitos tooodos los diash 💘💞❣️💕💝💖💗",
+"Pala ver esa peshosha carita Pol siempre 💓🩷💗💘💖💞",
+"Pala que seas toda mía 😠💕💝❣️💓🩷💗",
+"Pala cumplir nuestros sueños juntitosh (tu eles mi sueño) 💖💘💞💗💝❣️💗🩷",
+"Pol como me tratashh 💕🩷💓💗💘💞💗❣️",
+"Pol como desmuestras tu amoll 💖❣️💝💗🩷💓💞",
+"Pala ir de compras juntitoshh 💕💞💘❣️🩷",
+"Pala tener a nuestros gatitoshhh 💗💗💗",
+"Pala tener a nuestro pelitooo 💖💗💗💗",
+"Pala tener nuestro conejitooooooo 💝💓💗💕💖💞🩷💞",
+"Pala siemple amarte mash 😝💘💞❣️🩷💝",
+"Pala que nunca mash estés soltera 💗💓💝💕💖💝",
+"Pala que nunca mash te sientas solita 💘💝💞🩷💗",
+"Pala apoyarte apesar de tooolo ❣️💓💗💕🩷💖💞",
+"Pala tar juntitos Pol siempleeee 💘💝💞❣️💖❣️🩷",
+"Pala estar con Tigo en las guenas y en las malash 💓🩷💗💝💞🩷💖",
+"Pala tener unos hijitos tan preciosos como túuu 💕💘💖❣️💖💓💝💞",
+"Pala comer juntitosh 💗🩷💞💘💝❣️",
+"Pala ver series juntitoshhh 💕💖❣️💗🩷💘",
+"Pala que me obliges a ver k dramash jijiji 💓💞💘💕🩷",
+"Pala que me obliges a vel stranger thingsss 💝🩷💖💕💗",
+"Pala ver películas juntitos ❣️💓💗💘💕",
+"Pala comer cereal quemadoooo 💞💝💕💖💘💖",
+"Pala tener una lista de mi ortografía en la nevera 🩷❣️💖💗💘💞",
+"Pala darte muchos regalitos 💓💝💞❣️💖",
+"Pala pasar este y muchos días juntitosh 💕🩷💖💓💝",
+"Pala pasar muchos años juntitosh 💗💘💝❣️💓🩷🩷",
+"Pala jugar juntitosh ❣️💝💓💗 ",
+"Pala poder abrazarte tooodos los diash 💞💕💗💘❣️",
+"Pala pelear como Shi framed bebesh jijiji 👉👈💕💞💗❣️",
+"Pala que hagas un muro de peluches 💖🩷💝💓 💗💕 ",
+"Pala tener muchas fotitos juntosss 💖🩷💕💘❣️",
+"Pala viajar Pol muuuuchas partessss 💝💓❣️💞💖",
+"Pala jugar con nuestros hijutoshhh 💗🩷💖💘💓❣️",
+"Pala que cuando me despierte dentro de unos años me de cuenta que soy la persona mash afortunada del mundo Pol estar con Tigo y nuestros hijos 💕💝❣️💗💖",
+"Pala que mis hijos nunca digan que somos una mala familia 💞🩷💖💕💝💝",
+"Pala decorar nuestra casita de hello Kittyyyyy 💘💓💝💗💕💞",
+"Pala escuchar musiquita juntitos ❣️💞🩷💓💝",
+"Pala darte muuuchas cositas de hello Kitty 💖💝💘💓❣️💞",
+"Pala que siempre que vea algo de hello Kitty me acuerde de tii 💗💕💞💖❣️💝",
+"Pala que me obliges a escuchar black pink 🩷💘💝❣️💞💞",
+"Pala que tengamos muchos días gonitos 💓💗💞💖❣️💘💘",
+"Pala que siemple vea algo de black pink me acuerde de tii 💕🩷💘💝❣️💗",
+"Pala selevrar nuestros logros juntitos 💓💞💗💕❣️🩷",
+"Pala hacer muchas cosas juntitos 💖🩷💘💓❣️💗💗",
+"Pala conseguir nuestros logros como un equipo 💝💞💗💖❣️🩷",
+"Pala ser un equipo Pol siempleeee 💕💘🩷💝❣️💖",
+"Pala aprender cosas juntitos 💓💞💖💘🩷",
+"Pala darle besitos a esos peshoshosh labiesitosh todos los días 🫦💗💕🩷❣️💖💓",
+"Pala que cuando sigamos frío nos demos un abrazototototeeee 💞💓💘💓💘💖❣️🩷",
+"Pala reírnos de muchas cosas juntitoshhh 💝🩷💗❣️💞💓💘",
+"pala siemple tal juntitosh 💖💕💝💗💓💞",
+"Pala hacer muchas actividades juntitos ❣️🩷💘💞💕💝",
+"Pala probar muchos jueguitoshh 💖💗💝💓🩷🩷",
+"Pala hacer retos de actuaciónnn ❣️🩷💘💕💗",
+"Pala ayudarte a que seas la mejol actriz 💞💖💗💓❣️💘",
+"Pala motivarme cada día a ser un mejor novio 💝🩷💘💖",
+"Pala que nos enredemos 'ayudando' a hacer la tarea de nuestros hijitosh jsjsjsjjs 💕💞💖💗💘❣️🩷",
+"Pala que tengas muchos peluches y que hagas un muro de peluches cuando estés 'enojada' con Milo 💓💝🩷💞❣️💗💗",
+"Pala hacer una fortaleza supel fuelteee 💕💖💗💓🩷🩷",
+"Pala estar super feliz es cuando compremos nuestra primera casita 💘💝🩷❣️🩷💖💗💗",
+"Pala casarnos y tener el día mash feliz de mi vidaaa 💞💕💗💓❣️🩷🩷",
+"Pala estar con Tigo cuando nascan nuestros hijitosh 💘💝🩷💖💕💗",
+"Pala que seamos una familia supel gonitaaa 💞💓💗💓💕💝",
+"Pala que apenas podamos nos vallamos a vivil juntitoshhh 🩷💖💗💓💞💘",
+"Pala que mi vida sea la vida mash feliz que me pueda imaginar ❣️💝💘🩷💞💖💗",
+"Pala estar con el amor de mi vida Pol siempleee (tu) 💕💓💗❣️💖💘💞🩷",
+"Pala que a un que estemos viejitos y arrugaditosh nos amenos como el primer día 💝💓💞❣️💖",
+"Pala poder superar todos esos momentos malos que tengamos y seguir amandonos cada día másh 💓💗💞❣️💖💘🩷",
+"Pala que siemple seamos tu y Yio Pol siempleee 💕💗💖💘❣️🩷💞💝💓",
+"Pala que hagamos haceo en la casa juntitoshh 💕💗💓❣️🩷",
+"Pala que nuestros hijos tengan una madre preciosaaaa 💖💘🩷💝❣️💝💓",
+"Pala poder ir a muchas partes juntitos 💞💓💝💕💗💝💞💘",
+"Pala ir a el cine juntitoshhh 💖🩷💘💓💞💗💗",
+"Pala verte feliz siemple 💝💘🩷❣️💞💕💗",
+"Pala que cuando estés mal te desahogas con Migo 🥺💓💗💞❣️",
+"Pala hacerte sentir mejol cuando pueda 💝💖💘💕💕",
+"Pala ayudarte en tooodo lo que necesitesh 🩷💓💕💗💘💞💖💝",
+"Pol tu forma de vestirrr ❣️💗💞💝💝",
+"Pala amarnos igual apesar de la distancia 🩷💓💝💘💞❣️",
+"Pala que plontito de vuelva a ver y ño volvernos a separar 💕💖❣️🩷💞💓💝",
+"Pala tener una casita como la de blueyyy 💗💘💝💕💓❣️🩷🩷",
+"Pala ser el hombre más feliz de el mundo Pol siempleee 💖💞🩷❣️💝💕",
+"Pala que seas mi pinseshita Pol siempleee 💗💘💕💓💝💖❣️💖❣️"
+];
+
+function mostrarRazon() {
+  const random = Math.floor(Math.random() * razones.length);
+  document.getElementById("textoRazon").innerText = razones[random];
+}
+
+/* =========================
+   QUIZ
+========================= */
+const preguntas = [
+  {
+    pregunta: "¿Cuál es mi comida favorita?",
+    opciones: ["arroz chino", "mani", "pizza", "Arroz con pollo"],
+    correcta: 0,
+    mensajeCorrecto: "ñooooo, mi comida fav eres tú bebe GLLL JKJSKAJSKSJKASJKJKSJA"
+  },
+  {
+    pregunta: "¿Cuando te conoci?(y quede flechadisimo de ti)muejejeej",
+    opciones: ["10 de abril" , "28 de febrero", "21 de marzo", "21 de mayo"],
+    correcta: 1,
+    mensajeCorrecto: "SHIIIIII 28 de febreroo, el día que me robaste el corazón 💙❤️"
+  },
+  {
+    pregunta: "¿A que pareja dijiste que nos pareciamos por primera vez?",
+    opciones: ["azul y rojo", "zai zai y rang rang", "hello kity y batman", "hello kity y spiderman"],
+    correcta: 3,
+    mensajeCorrecto: "SHII hello kity y spiderman SHI somosh SHI SOMOSHH"
+  },
+  {
+    pregunta: "¿donde fue nuestro primer pico?",
+    opciones: ["en la biblioteca", "en la capilla", "alfrente de tu salon", "en la salida"],
+    correcta: 2,
+    mensajeCorrecto: "shiiiii, alfrente de tu salon, el lugar donde me enamore de ti por completo 💙❤️"
+  },
+  {
+    pregunta: "¿cual es la primera serie que nos veremos cuando vivamos juntitos?",
+    opciones: ["death note", "When I Fly Towards You", "vinland saga", "el juego de el calamar"],
+    correcta: 1,
+    mensajeCorrecto: "SHIII, tu me obligarash a vel cuando vuelo hacia tiii"
+  }
+];
+
+const mensajesIncorrectos = [
+  "Ñooo, te fuiste por otro lado 😭",
+  "ay ño amol esha ño 😔",
+  "Cashi, pelo ño era esa",
+  "Ñop, como ño vash a sabel?😭",
+  "Nel, mu mal mu mal mu mal",
+  "ñopiii, ota veshh",
+  "ñopi, esha ño elaa"
+];
+
+let preguntaActual = 0;
+
+function iniciarQuiz() {
+  preguntaActual = 0;
+  mostrarPregunta();
+}
+
+function mostrarPregunta() {
+  const pregunta = preguntas[preguntaActual];
+  const contenedorOpciones = document.getElementById("opcionesQuiz");
+  const textoPregunta = document.getElementById("preguntaActual");
+  const resultado = document.getElementById("resultadoQuiz");
+  const progreso = document.getElementById("progresoQuiz");
+  const botones = document.getElementById("botonesQuiz");
+
+  resultado.innerText = "";
+  botones.innerHTML = "";
+  textoPregunta.innerText = pregunta.pregunta;
+  progreso.innerText = `Pregunta ${preguntaActual + 1} de ${preguntas.length}`;
+  contenedorOpciones.innerHTML = "";
+
+  pregunta.opciones.forEach((opcion, index) => {
+    const btn = document.createElement("button");
+    btn.innerText = opcion;
+    btn.onclick = () => responderQuiz(index);
+    contenedorOpciones.appendChild(btn);
+  });
+}
+
+function responderQuiz(indiceElegido) {
+  const pregunta = preguntas[preguntaActual];
+  const resultado = document.getElementById("resultadoQuiz");
+  const botones = document.getElementById("botonesQuiz");
+  botones.innerHTML = "";
+
+  if (indiceElegido === pregunta.correcta) {
+    resultado.innerText = pregunta.mensajeCorrecto;
+    const btnContinuar = document.createElement("button");
+    btnContinuar.innerText = (preguntaActual === preguntas.length - 1) ? "Ver felicitaciones 🎉" : "Continuar";
+    btnContinuar.onclick = siguientePregunta;
+    botones.appendChild(btnContinuar);
+  } else {
+    resultado.innerText = mensajesIncorrectos[Math.floor(Math.random() * mensajesIncorrectos.length)];
+    const btnRepetir = document.createElement("button");
+    btnRepetir.innerText = "repetil ↩️";
+    btnRepetir.onclick = function() { iniciarQuiz(); };
+    botones.appendChild(btnRepetir);
+  }
+}
+
+function siguientePregunta() {
+  if (preguntaActual < preguntas.length - 1) {
+    preguntaActual++;
+    mostrarPregunta();
+  } else {
+    mostrarFelicitaciones();
+  }
+}
+
+function mostrarFelicitaciones() {
+  document.getElementById("preguntaActual").innerText = "¡Terminaste el quiz! 🎉";
+  document.getElementById("opcionesQuiz").innerHTML = "";
+  document.getElementById("resultadoQuiz").innerText = "shiii, lo hiciste increíble mi vidaa 💙❤️";
+  document.getElementById("progresoQuiz").innerText = "";
+  document.getElementById("resultadoQuiz").innerText = "el primer numero es ✌️";
+  document.getElementById("progresoQuiz").innerText = "";
+
+
+  const botones = document.getElementById("botonesQuiz");
+  botones.innerHTML = "";
+  const btnReiniciar = document.createElement("button");
+  btnReiniciar.innerText = "Repetir quiz";
+  btnReiniciar.onclick = iniciarQuiz;
+  botones.appendChild(btnReiniciar);
+}
+
+/* =========================
+   LLUVIA
+========================= */
+function crearLluvia() {
+  const contenedor = document.getElementById("contenedorLluvia");
+  for (let i = 0; i < 20; i++) {
+    const palabra = document.createElement("span");
+    
+    // 5% de probabilidad de mostrar "te amo 0️⃣" y 95% de mostrar solo "te amo "
+    palabra.innerText = Math.random() < 0.05 ? "el segundo numero es el 0️⃣" : "te amo ";
+    
+    palabra.style.left = Math.random() * window.innerWidth + "px";
+    palabra.style.color = Math.random() < 0.5 ? "red" : "blue";
+    palabra.style.fontSize = (Math.random() * 25 + 15) + "px";
+    palabra.style.animationDuration = (Math.random() * 5 + 3) + "s";
+    palabra.style.animationName = Math.random() < 0.5 ? "caer" : "subir";
+    palabra.style.animationTimingFunction = "linear";
+    palabra.style.animationFillMode = "forwards";
+
+    palabra.addEventListener("animationend", () => palabra.remove());
+    contenedor.appendChild(palabra);
+  }
+}
+
+/* =========================
+   1. MAPA INTERACTIVO (SATÉLITE CON CALLES)
+========================= */
+let mapaInstancia = null;
+
+function inicializarMapa() {
+  if (!mapaInstancia) {
+    // 1. Establece la vista inicial [latitud, longitud] y el nivel de zoom
+    mapaInstancia = L.map('map').setView([4.439161, -75.217969], 13);
+
+    // 2a. Capa de imagen de satélite (Fondo)
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 19,
+      attribution: 'Tiles &copy; Esri'
+    }).addTo(mapaInstancia);
+
+    // 2b. Capa transparente con nombres de calles y carreteras (Etiquetas sobrepuestas)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {
+      maxZoom: 19,
+      subdomains: 'abcd'
+    }).addTo(mapaInstancia);
+
+    // 3. Tus puntos especiales con tus coordenadas reales
+    L.marker([4.4391611007993035, -75.21796997552529])
+      .addTo(mapaInstancia)
+      .bindPopup("<b>Nos Conocimos 💕</b><br>El lugar donde comenzó todo.");
+
+    L.marker([4.439160207377448, -75.21906646758933])
+      .addTo(mapaInstancia)
+      .bindPopup("<b>el lugar donde mas tiempo pasamos 🥹</b><br>Donde mash nos comimos jijijij");
+
+    L.marker([6.176834300703173, -75.5915435428406])
+      .addTo(mapaInstancia)
+      .bindPopup("<b>El lugar donde nos vimos después de tanto tiempo 🥹😭💗</b><br>ojala hubiera sido eterno");
+
+    L.marker([6.208813564925666, -75.56629643375659])
+      .addTo(mapaInstancia)
+      .bindPopup("<b>Nuestro ultimo lugar donde nos vimos 😭</b><br>ojala haberte dado mas besitosh 🥺🥺");
+
+    L.marker([34.667666221319166, 135.4304164599791])
+      .addTo(mapaInstancia)
+      .bindPopup("<b>el cuarto numero es el</b><br>🕠");
+  }
+
+  // El setTimeout DEBE ir aquí adentro, para que se ejecute 
+  // justo después de que la sección se haga visible y Leaflet pueda medirla.
+  setTimeout(() => {
+    mapaInstancia.invalidateSize();
+  }, 150);
+}
+
+/* =========================
+   2. GALERÍA DE RECUERDOS
+========================= */
+const fotosAlbum = [
+  { url: "img/us.jpeg", desc: "nosotros en un futuro 💗💗💗" },
+  { url: "img/beso.jpeg", desc: "nuestra primera fotico juntitosh 🥹🥹" },
+  { url: "img/vivah.jpeg", desc: "aqui estas simplemente hermosa mi vidaa 😩💗💗💖💘" },
+  { url: "img/vivac.jpeg", desc: "HAAYYYYY ÑO ENTIENDO TU NIVL DE HERMOSURAA 😭😭💘💝💝💖" },
+  { url: "img/comunas.jpeg", desc: "Las almas gemelas shi tienen fechas de nacimiento similares, feliz cumpleaños mi pinseshitaa 💗💗💗🎂🎉" },
+  { url: "img/fav.jpeg", desc: "simplemente mi fotito favoritaa  🥹💗💘💘️ (el quinto numero es el 1️⃣)" },
+];
+let indexAlbum = 0;
+
+function cambiarFoto(dir) {
+  indexAlbum += dir;
+  if (indexAlbum < 0) indexAlbum = fotosAlbum.length - 1;
+  if (indexAlbum >= fotosAlbum.length) indexAlbum = 0;
+
+  document.getElementById("imgAlbum").src = fotosAlbum[indexAlbum].url;
+  document.getElementById("descAlbum").innerText = fotosAlbum[indexAlbum].desc;
+}
+
+/* =========================
+   8. MENSAJE SECRETO
+========================= */
+function verificarClave() {
+  const clave = document.getElementById("claveInput").value;
+  const msj = document.getElementById("mensajeOculto");
+  if (clave === "2025100467") {
+    msj.innerText = "este regalo sera revelado prontito JIJIJIJIJI ❤️❤️❤️";
+    msj.style.display = "block";
+  } else {
+    alert("Código incorrecto, busca mejor en toda la pagina mi leinaa ❤️❤️");
+  }
+}
+/* =========================
+   9. CRECER FLOR
+========================= */
+let etapaFlor = 0;
+const fasesFlor = ["🌱", "🌿", "🌷", "✨🌷✨"];
+const textosFlor = [
+  "Cuidando nuestra flor...",
+  "Creciendo poco a poco con mucho amor...",
+  "¡Ya está dando sus primeros pétalos!",
+  "Así como esta flor, quiero ver crecer lo nuestro por siempre. ❤️"
+];
+
+function crecerFlor() {
+  if (etapaFlor < fasesFlor.length - 1) {
+    etapaFlor++;
+    document.getElementById("etapaFlor").innerText = fasesFlor[etapaFlor];
+    document.getElementById("textoFlor").innerText = textosFlor[etapaFlor];
+    
+    // Si llega a la última etapa (✨🌷✨), agregamos el número secreto más abajito
+    if (etapaFlor === fasesFlor.length - 1) {
+      // Verificamos si ya existe el elemento para no duplicarlo si vuelve a hacer clic
+      if (!document.getElementById("numeroFlor")) {
+        const contenedorFlor = document.getElementById("flor").querySelector(".card-container");
+        const pNumero = document.createElement("p");
+        pNumero.id = "numeroFlor";
+        pNumero.style.fontSize = "20px";
+        pNumero.style.color = "#00ffcc";
+        pNumero.style.marginTop = "15px";
+        pNumero.innerText = "el noveno numero es el 6️⃣";
+        contenedorFlor.appendChild(pNumero);
+      }
+    }
+  }
+}
+/* =========================
+   INICIO
+========================= */
+mostrarSeccion("razones");
+
+/* =========================
+   ALEATORIZADOR PARA ABRE CUANDO...
+========================= */
+const mensajesExtrañes = [
+  "Mi amorchito lindo, shi supieras las ganas que tengo de abrazarte en este preciso instante, entenderías por qué a veces quisiera que la distancia simplemente desapareciera. Te amo demasiado, mi niña hermosa 💙",
+  "Mi niña helmosha, ¿sabes qué haría shi estuvieras aquí? Te abrazaría bien fuerte, te llenaría de besitos y no te soltaría hasta que tú misma me dijeras que ya parezco koala JSJSJS 🥹",
+  "Mi vida, aunque hoy ño pueda tenerte cerquita, quiero que recuerdes que hay un niño por allá que piensa en ti, te presume y se enamora de ti un poquito más cada día 💗",
+  "Ojalá pudiera atravesar la pantalla, aparecer a tu ladito y decirte al oído lo muchísimo que te amo. Por ahora te mando todos los besitos que tengo guardados para ti MUACK MUACK MUACK 💋",
+  "Shi me dieran un peso por cada vez que quisiera abrazarte, ya tendría para comprarte una casita, vivir juntitosh y comprarte muchas pizzitashhh 🍕💗",
+  "Ño importa cuántos kilómetros haya entre nosotros, mi corazón sigue teniendo tu nombre escrito en todas partes. Y ño pienso borrarlo jamash mi niña 💙",
+  "Mi amol, extraño nuestras risas, nuestras miradas, nuestros momenticos juntitos y hasta esas cositash tontas que hacemos sin darnos cuenta. Contigo hasta no hacer nada se siente bonito. 💞",
+  "A veces quisiera pausar el mundo, tomar tu manito y quedarme contigo un ratito más, sin preocuparme por la hora ni por tener que despedirnos 🫂",
+  "Mi princesa hermosa, shi hoy me extrañas mucho, recuerda que yo también cuento los momenticos que faltan para volver a verte. Quiero coleccionar muchos más recuerdos contigo mi vidaa 💙",
+  "Ño sabes lo feliz que me hace saber que, en algún lugar de este mundo tan enorme, estás tú. Mi niña hermosa, mi coincidencia favorita 🥹",
+  "Extrañarte me hace valorar todavía más esos abrazos que antes parecían tan corticos. La próxima vez que te vea, prepárate, porque pienso aprovechar cada segundo contigo 🥹",
+  "Mi niña, ño quiero que la distancia te haga dudar ni un segundito de lo especial que eres para mí. Estás in mis pensamientos incluso cuando estoy ocupado haciendo cualquier otra cosa 💕",
+  "Si pudiera pedir un deseo ahora mismo, ño pediría dinero, fama ni una PC más potente. deseharia con todo mi corazon poder tenerte aquí conmigo 🥹",
+  "Te acuerdas de nuestros días juntitos? Yo guardo esos recuerdos como pequeños tesoros. Y lo más bonito es que todavía nos quedan un montón de historias por vivir 💗",
+  "Mi amorcito, quisiera que pudieras ver cómo sonrío cuando aparece una notificación tuya. Parezco un bobo enamorado mirando el celular, y sí, soy exactamente esho JSJSJS 😭💙",
+  "Mi Niña preciosa, ño hay distancia que pueda quitarle valor a lo que hemos vivido ni a las ganas que tengo de seguir creando recuerdos contigo. Te amo, mi vida 💕",
+  "Shi estuvieras aquí, probablemente estaríamos haciendo cualquier coshita, riéndonos por algo que ni siquiera da risa y molestándonos cariñosamente. Y yo sería extremadamente feliz con eso 💗",
+  "Tú ño eres solamente alguien a quien extraño, eres alguien con quien quiero compartir muchísimas cosas: mis logros, mis días difíciles, mis sueños y mis momentos más simples 🥹",
+  "Mi niña hermosa, quisiera poder darte un besito cada vez que pienses en mí, para que nunca olvides que eres muy amada. Por ahora te toca conformarte con este montón de letras, ño vale JMP 😡",
+  "Te extraño, mi amor. Así, sencillito, sin palabras complicadas. Te extraño porque te quiero cerquita, porque me haces feliz y porque eres una parte muy bonita de mi vidaa 💙",
+  "Ojalá el próximo abrazo que te mande no sea por una pantalla ni por mi imaginación, sino uno de verdad, de esos en los que te aprieto suavemente y te digo que te amo como a nadie 🫂",
+  "Mi princeshita, gracias por existir y por haber llegado a mi vida. Entre tantas personas en el mundo te encontré a ti, a el amor de mi vida y a la mejor niña del universho 💗",
+  "Shi alguna vez te preguntas cuánto te extraño, imagina todas las veces que he querido contarte algo y he pensado que sería más bonito hacerlo teniéndote al ladito 🥺",
+  "Quiero volver a caminar contigo, tomarte de la mano, hacerte reír y mirarte mientras pienso lo afortunado que soy de compartir estos momenticos contigo. 💕",
+  "Qué bonito amar tanto a una personita como para desear verla siempre, todos los dias pala siempre, TAMBIENTE EXTREÑO MUCHISIMO Y TE AMO COMO A NADIE MI VIDA HELMOSHA 💙"
+];
+
+const mensajesTriste = [
+  "Mi amorcito, hablame, aunque sea por este mensajito, y déjame recordarte que ño tienes que poder con todo siempre. Puedes tener días difíciles, llorar shi lo necesitas y descansar. Te amo muchísimo, mi niña. 🫂",
+  "Mi niñita, escribeme y déjame recordarte que ño tienes que cargar con ese peso tu solita, aqui yio siempre estare pala ti por que somos un equipo los dosh 🥹",
+  "Mi niña helmosha, ojalá pudiera darte un abrazote ahora mismo y acariciarte la cabecita hasta que te sintieras mejol 💗",
+  "Mi princesa hermosa, un día triste ño hace que tu vida sea menos bonita, y sentirte mal ño te hace menos increíble. Sigues siendo mi niña preciosa, incluso en tus días más difíciles 💕",
+  "Amol mío, respira despacito, ¿ti? Ño tienes que resolverlo todo en este instante. Ve pasito a pasito. Y shi quieres contarme qué pasó, aquí estoy para escucharte sin juzgarte jamash 🥹",
+  "Mi soleshito, quisiera poder quitarte todas las preocupaciones con un besito en la frente, pero mientras ño pueda hacerlo, quiero acompañarte y recordarte que te amo muchismo 💙",
+  "Mimi, no tienes que disculparte por estar triste ni por tener un día en el que no te sientas tú misma. Puedes hablar conmigo, guardar silencio o simplemente descansar un ratico. Te quiero mucho. 🫂",
+  "Mi niña preciosa, ¿sabías que ño necesitas hacer nada extraordinario para merecer cariño? Ño tienes que ser fuerte todo el tiempo ni demostrarle nada a nadie para que te quieran, yio te quiero y te amo tal y como eres mi vida 💗",
+  "Shi hoy el mundo se siente demasiado pesado, mi amol, intenta hacer las cosas de una en una. Toma awuita, descansa un poquito y date permiso de ño tener todas las respuestas hoy 🥺",
+  "Mi princesa, aunque no pueda solucionar todo lo que te preocupa, shí puedo escucharte, acompañarte y hacerte saber que ño tienes que esconder lo que sientes conmigo. 💕",
+  "Quiero que recuerdes algo, Mi leina: eres mucho más que un mal día, una equivocación o una cosa que ño te salió como esperabas. Estoy orgulloso de ti por seguir intentandolo mi niña 💙",
+  "Mi amorcito, shi hoy ño tienes ganas de hablar mucho, está bien. No tienes que inventarte una sonrisa para mí. Prefiero que seas tú misma y me cuentes cómo te sientes de verdad 🫂",
+  "Quisiera abrazarte y decirte que ño todo tiene que salir perfecto para que las cosas puedan mejorar. Date tiempo, mi vida. Ño tienes que correr para estar bien. 💗",
+  "Mi vevita hermosa, hay tantas cosas bonitas en ti que quizá a veces tú misma ño alcanzas a verlas. Tu forma de reír, tus ocurrencias y esos detallitos que te hacen ser tú. Te amo tal como eres. 🥹",
+  "Amor, shi algo te salió mal hoy mañana tendrás otra oportunidad de intentarlo. Y si necesitas descansar antes de volver a intentarlo, también está bien. Ño te exijas ser perfecta pol que para mi yia lo eres mi niña 💕",
+  "Mi princesa preciosa, quisiera prestarte mis ojos para que pudieras ver lo especial que eres para mí. Tal vez así entenderías por qué me importas tanto y por qué quiero verte feliz. 💙",
+  "Mi estrellita, ño tienes que guardarte todas tus preocupaciones para ño molestar a los demás. Lo que sientes merece ser escuchado, y puedes decirme cuando necesites hablar o buscar apoyo, siempre estare pala ti mi soleshito 🫂",
+  "Mi niña, incluso cuando ño tengas ganas de hacer nada, sigues mereciendo cariño, paciencia y cositas hermosas como tu mi vida 💗",
+  "Shi pudiera aparecer frente a ti ahora mismo, te llevaría algo rico, te abrazaría y trataría de sacarte una sonrisita con alguno de mis chistes malosh JIJIJIJ 💗",
+  "Mi amorcito, ño siempre podemos controlar lo que pasa a nuestro alrededor, pero podemos intentar cuidarnos mientras las cosas se acomodan. Ño olvides darte un poquito de amor a ti misma también, eres asombrosa 🥹",
+  "Mi princesa, shi hoy necesitas recordar algo bonito, recuerda que eres una personita muy especial, que mereces cosas buenas y que todavía te esperan muchos momentos lindos por vivir 💙",
+  "Mi vevita hermosa, quisiera poder hacer que todas tus preocupaciones desaparecieran por arte de magia. Como todavía ño soy mago, te ofrezco mis abrazos imaginarios y todo mi cariño y amor JIJIJIJJI 🪄💗",
+  "Mi vida, ño te compares con nadie ni sientas que tienes que llevar el mismo ritmo que los demás. Tu camino también merece paciencia. Estoy feliz de verte crecer y aprender a tu manera. 🫂",
+  "Amol mío, puedes contarme lo que te duele sin miedo a que piense menos de ti. Ño necesito que estés feliz todo el tiempo para quererte. Tus días difíciles también merecen ternura. 💕",
+  "Shi pudiera pedir algo para ti hoy, pediría que tu corazón tuviera un poquito de tranquilidad, que pudieras descansar de tus preocupaciones y que recordaras lo valiosa que eres 🥹"
+];
+
+// 💖 AQUÍ SE AGREGA LA IMAGEN JUNTO CON TUS TEXTOS
+const mensajesReir = [
+  "ÑO AMOL, ÑO VOY A DECIR SIX SEVEN 😡",
+  "SHI ME VASH A DAR CEREAL QUEMADO CUANDO NOS CASEMOSH MI VIDAAAA???? 💗",
+  "el numero octavo es 🍀 mi vidaa 💗",
+  '<img src="img/meme.png" alt="Meme" style="max-width: 100%; border-radius: 12px; margin-top: 10px;">'
+];
+
+const mensajesDormir = [
+  "Buenas noches, mi niña helmoshaa. Espero que descanses bem, que sueñes cosas preciosas y que mañana despiertes con una sonrisita. Te amo muchísimo, mi niña hermosa. 🌙💗",
+  "Mi leinita, antes de dormir quería recordarte que eres una de las cosas más bonitas que me han pasado. Gracias por formar parte de mi vida en selio mi niña. Te mando mutos besitos mi vevitaa 💋",
+  "Cierra tus ojitos, mi princesa, y descansa. Ojalá pudiera estar a tu ladito abrazándote, acariciándote el cabello y diciéndote cuánto te amo hasta que te quedaras dormidita 🥹💙",
+  "Buenas noches, mi vida. Shi hoy fue un día bonito, me alegra que hayas tenido momentos felices. Y si fue difícil, espero que puedas descansar y recibir mañana con más tranquilidad. Te amo muchísimo mi bebe🫂",
+  "Mi estrellita preciosa, imagina que te doy un besito en la frente, te acomodo la cobijita y te digo bajito: «Descansa, mi niña linda, mañana será otro día y aquí tienes a alguien que te quiere mucho». 🌙💕",
+  "Mi soleshito, espero que puedas mimir felizmente y que ese resplandor que ilumina todos los días de mi existencia te deje dormir mi niña, te amo muchisisisimo mamita mia 💗 💗 💗",
+  "Mi niñita, espero que tus sueño esten llenos de cosas gonitas, que puedas comer pizza ver a hello kitty y que halla un concierto de black pink mientras yio estoy hay con tigo mi vida 💗",
+  "Antes de que te duermas, quiero dejarte tres besitos: uno por lo hermosa que eres, otro por lo especial que eres para mí y otro porque simplemente eres la perfección en persona. MUACK MUACK MUACK 💋💋💋",
+  "Buenas noches, mi niña. Gracias por las risas, los mensajitos, los recuerdos y todas esas pequeñas cosas que hacen que quererte sea tan bonito. Descansa mucho, mi amoltito 💙",
+  "Mi amorcito, quisiera que pudieras quedarte dormidita sabiendo que eres querida, que mereces cosas bonitas y que ño necesitas tener todo resuelto para disfrutar de un nuevo día. Te mando un abrazo enorme 🫂",
+  "Mi muñequita, ¿te imaginas que algún día podamos despedirnos de noche con un besito de verdad y luego dormir cerquita? Seria lo mejor de el mundo estar ashi junto a ti mi vidaa 💕",
+  "Mi vida, shi esta noche miras la luna, recuerda que, aunque estemos lejos, podemos compartir el mismo cielo. Y yo desde aquí te mando todo mi cariño, mi princesa. 🌙💙",
+  "Buenas noches, mi leinita. Ojalá pudiera ser el último abrazito que recibes antes de dormir y el primero que te acompaña cuando despiertes. Por ahora, te dejo todo mi amor en este mensajito. 💕",
+  "Mi niña preciosa, descansa esa cabecita tan linda. Mañana tendrás nuevas cosas que contarme, nuevas risas que compartir y nuevas oportunidades de hacer cualquier cosita con migo. JSJSJS 🌙",
+  "Mi princesa, imagina que estamos acostaditos mirando el techo, inventando historias tontas sobre las estrellas y hablando de nuestros sueños. Qué bonito sería tenerte cerquita en un momento así ✨💙",
+  "Mi niñita hermosaa, hoy termina otro día y quiero que una de las últimas cosas que leas sea esto: te amo muchísimo, me alegra tenerte en mi vida y deseo que mañana encuentres motivos para sonreír. 🥹💗",
+  "Mi amor, ño importa shi hoy hiciste mil cosas o shi fue un día tranquilito. Espero que puedas cerrar los ojitos en paz y recordar que también mereces descansar, divertirte y disfrutar de las pequeñas cositash 🌙",
+  "Shi pudiera pedirle algo a las estrellas esta noche, pediría que te acompañaran en tus sueños y que mañana te despertaras con el corazón tranquilito. Buenas noches, mi princesa preciosa. ✨💕",
+  "Mi vida, algún día quiero contarte todas estas cositas mirándote a los ojos, sin una pantalla de por medio, mientras te doy besitos entre frase y frase porque me distraigo contigo. JSJSJS 💋",
+  "Mi niña, espero que sueñes con aventuras bonitas, lugares nuevos y momentos que te hagan feliz. Y shi aparezco en alguno de tus sueños, espero al menos tener un buen papel en la historia. SJSKJSKHJS 💗",
+  "Mi princesa hermosa, gracias por permitirme conocerte poquito a poquito, descubrir tus ocurrencias y guardar recuerdos que me hacen sonreír incluso cuando estamos lejos. Te mando millones de besitos imaginarios. 💕",
+  "Ojalá algún día tengamos una casita donde podamos decirnos buenas noches en persona, compartir nuestros ultimos momrntos del día y quedarnos dormidos sabiendo que estamos cerquita. Qué bonito sería, mi vida. 🏡💗",
+  "Mi niñai hermosaa, antes de dormir quiero recordarte que estoy feliz de que nuestros caminos se hayan cruzado. Entre tantas personas, qué bonito haber coincidido contigo y poder llamarte mi amor. 🥹",
+  "Buenas noches, mi niña preciosa. Si mañana me despierto y veo un mensajito tuyo, probablemente empiece el día sonriendo como un bobo. Así que ya sabes quién tiene ese pequeño poder sobre mí. JSJSJS 💙",
+  "Mi Sofía, quiero que nuestros recuerdos bonitos ño sean solamente cosas que extrañemos, sino el comienzo de muchas más aventuras. Descansa, mi amol, que todavía nos quedan muchas historias por escribir. 🌙💕",
+  "Buenas noches, mi Mi leinita, mi princesa, mi niña hermosa, mi amorcito precioso. Shi pudiera darte un último besito antes de dormir, te diría al oído que te amo muchísimo y que me hace muy feliz compartir esta historia contigo. Sueña bonito, mi vida. Te mando un abrazo infinito. 💗🌙"
+];
+
+// 💖 FUNCIÓN ACTUALIZADA PARA DETECTAR TEXTO O IMAGEN
+function mostrarMensajeSobres(tipo) {
+  let lista = [];
+  if (tipo === 'extrañes') lista = mensajesExtrañes;
+  if (tipo === 'triste') lista = mensajesTriste;
+  if (tipo === 'reir') lista = mensajesReir;
+  if (tipo === 'dormir') lista = mensajesDormir;
+
+  const randomIndex = Math.floor(Math.random() * lista.length);
+  const contenidoElegido = lista[randomIndex];
+
+  const contenedorTexto = document.getElementById("textoSobres");
+  
+  if (contenidoElegido.includes("<img")) {
+    contenedorTexto.innerHTML = contenidoElegido;
+  } else {
+    contenedorTexto.innerText = contenidoElegido;
+  }
+
+  document.getElementById("resultadoSobres").style.display = "block";
+}
+
+function cerrarMensajeSobres() {
+  document.getElementById("resultadoSobres").style.display = "none";
+}
+</script>
+
+</body>
+</html>
